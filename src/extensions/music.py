@@ -4,6 +4,9 @@ import discord
 import asyncio
 from discord.ext import commands
 from yt_dlp import YoutubeDL
+from src.utils.message import GenericEmbed
+
+from src import settings
 
 
 class Music(commands.Cog):
@@ -14,86 +17,125 @@ class Music(commands.Cog):
         self.loop = False
         self.current_song = None
         self.voice_channel = None
-        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
-        self.YDL_OPTIONS_PLAYLIST_LENGTH = {'flatplaylist': 'True', 'playlistend': 1}
-        self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-                               'options': '-vn'}
-        self.LINK_LIST = ('www.youtube.com', 'youtube.com', 'youtu.be',
-                          'www.soundcloud.com', 'soundcloud.com')
+        
+        self.embeds = settings.CONFIGFILE.get("embeds", {})
+
+    def debug (self, content):
+        print(
+            "=" * 40, 
+            f"\n{content}\n",
+            "=" * 40
+        )
+
+    def __generate_song (self, results):
+        return {
+            'title'       : results['title'],
+            'source'      : results['url'], 
+            'uploader'    : results['uploader'],
+            'thumbnail'   : results['thumbnail'],
+            'webpage_url' : results['webpage_url']
+        }
+    
+    def __is_valid (self, url):
+        pieces = url.split('/')
+        _valid = (len(list(set(pieces) & set(settings.LINK_LIST))) > 0)
+        return _valid
+
+    def __is_playlist(self, url):
+        pieces = url.split("/")
+        parameter = pieces[-1].split('?')
+        return parameter[0] == 'playlist'
 
     async def search(self, video, ctx):
-        check = video.split('/')
-        link = False
-        playlist = False
-        for i in self.LINK_LIST:
-            if i in check:
-                link = True
-                break
-        if link and check[-1].split('?')[0] == 'playlist':
-            playlist = True
-        if playlist:
+        is_link = self.__is_valid(video)
+        is_playlist = self.__is_playlist(video)
+
+        if is_playlist:
             asyncio.create_task(self.load_playlist(ctx, video))
-        elif link:
-            results = await self.bot.loop.run_in_executor(None, self.get_info, self.YDL_OPTIONS, video)
-            song = {
-                'source': results['url'], 
-                'title': results['title']
-            }
-            self.queue.append(song)
-            await self.send_queue(ctx, [song])
         else:
-            source = await self.bot.loop.run_in_executor(None, self.get_info, self.YDL_OPTIONS, f'ytsearch:{video}')
-            results = source['entries'][0]
-            song = {
-                'source': results['url'], 
-                'title': results['title']
-            }
+            results = {}
+            _link = None
+
+            # Get direct video url or text search
+            if is_link: _link = video
+            else: _link = f'ytsearch:{video}'
+
+            # Run code inside bot thread
+            source = await self.bot.loop.run_in_executor(
+                None, self.get_info, settings.YDL_OPTIONS, _link
+            )
+            
+            # Get first video from playlist
+            if _link: results = source
+            else: results = source.get("entries", [{}])[0]
+            
+            song = self.__generate_song(results)
             self.queue.append(song)
-            await self.send_queue(ctx, [song])
 
     async def play_music(self, ctx):
         if len(self.queue) > 0 or self.loop:
             self.playing = True
+
             if not self.loop:
                 self.current_song = self.queue[0]
                 await self.send_title(ctx)
                 self.queue.pop(0)
-            self.voice_channel.play(discord.FFmpegPCMAudio(self.current_song['source'], **self.FFMPEG_OPTIONS),
-                                    after=lambda x: asyncio.run_coroutine_threadsafe(self.play_music(ctx),
-                                                                                     self.bot.loop))
+            
+            self.voice_channel.play(
+                discord.FFmpegPCMAudio(
+                    self.current_song['source'], 
+                    **settings.FFMPEG_OPTIONS
+                ),
+                after = lambda x: asyncio.run_coroutine_threadsafe(self.play_music(ctx), self.bot.loop)
+            )
+
         elif len(self.queue) == 0 or not self.voice_channel.is_playing():
             self.playing = False
             
     async def load_playlist(self, ctx, link):
         songs = []
-        source = await self.bot.loop.run_in_executor(None,
-                                                     self.get_info,
-                                                     self.YDL_OPTIONS_PLAYLIST_LENGTH,
-                                                     link)
+        source = await self.bot.loop.run_in_executor(
+            None, 
+            self.get_info, settings.YDL_OPTIONS_PLAYLIST_LENGTH,
+            link
+        )
         playlist_length = source['playlist_count']
         for i in range(playlist_length):
-            source = await self.bot.loop.run_in_executor(None,
-                                                         self.get_info,
-                                                         {'format': 'bestaudio',
-                                                          'noplaylist': 'False',
-                                                          'playliststart': i+1,
-                                                          'playlistend': i+1},
-                                                         link)
+            source = await self.bot.loop.run_in_executor(
+                None,
+                self.get_info,
+                {
+                    'format': 'bestaudio',
+                    'noplaylist': 'False',
+                    'playliststart': i+1,
+                    'playlistend': i+1
+                }, 
+                link
+            )
             results = source['entries'][0]
-            song = {'source': results['url'], 'title': results['title']}
+            song = {
+                'source': results['url'], 
+                'title': results['title']
+            }
             self.queue.append(song)
             songs.append(song)
             if not self.playing:
                 await self.play_music(ctx)
-        await self.send_queue(ctx, songs)
 
     async def delete_messages(self, ctx, amount):
         await ctx.channel.purge(limit=amount, check=lambda message: message.author == self.bot.user)
 
     async def send_title(self, ctx):
-        title = self.queue[0]['title']
-        message = str(f"```Now playing:\n{title}```")
-        await ctx.send(message)
+        _settings = self.embeds.get("now_playing", {})
+        song_info = self.queue[0]
+
+        _settings["fields"][0]["name"] = song_info['title']
+        _settings["fields"][0]["name"] = song_info['uploader']
+        _settings["thumbnail"]["url"]  = song_info['thumbnail']
+
+        message = GenericEmbed().configure(_settings)
+
+        await ctx.send(embed=message)
 
     @staticmethod
     def get_info(parameters, link):
@@ -132,7 +174,7 @@ class Music(commands.Cog):
     @commands.command(pass_context=True)
     async def skip(self, ctx):
         if await self.user_is_connected(ctx) and self.voice_channel.is_connected() and self.playing:
-            await ctx.send("```They see me skippin', they hatin'~```")
+            # await ctx.send("```They see me skippin', they hatin'~```")
             self.loop = False
             self.voice_channel.stop()
 

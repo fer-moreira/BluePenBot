@@ -58,7 +58,17 @@
             ]
         },
         "now_playing" : {
-
+            "type" : "rich",
+            "title" : "💿 Tocando agora",
+            "fields" : [
+                {
+                    "name" : "{author}",
+                    "value" : "{title}"
+                }
+            ],
+            "thumbnail" : {
+                "url" : "{thumbnail}"
+            }
         }
     }
 }
