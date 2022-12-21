@@ -10,3 +10,11 @@ venv
 __pycache__
 
 *.pyc
+
+.vscode
+/.vscode
+/.vscode/
+**/.vscode/
+**/.vscode/**
+**/.vscode/*
+*/.vscode/
