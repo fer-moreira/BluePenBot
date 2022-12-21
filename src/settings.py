@@ -6,7 +6,7 @@ PREFIX = '!'
 
 CONFIGFILE = {}
 
-with open("config.json", "r") as file:
+with open("./src/config.json", "r") as file:
     CONFIGFILE = json.load(file)
 
 
@@ -31,3 +31,10 @@ LINK_LIST = [
     'www.soundcloud.com', 
     'soundcloud.com'
 ]
+
+# EXTENSIONS_PATH = "src.extensions"
+# EXTENSIONS_LIST = [
+#     f"{EXTENSIONS_PATH}.{f}" 
+#     for f in os.listdir("extensions") 
+#     if ".py" in f
+# ]

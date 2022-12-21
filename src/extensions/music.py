@@ -8,7 +8,6 @@ from src.utils.message import GenericEmbed
 
 from src import settings
 
-
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -114,10 +113,7 @@ class Music(commands.Cog):
                 link
             )
             results = source['entries'][0]
-            song = {
-                'source': results['url'], 
-                'title': results['title']
-            }
+            song = self.__generate_song(results)
             self.queue.append(song)
             songs.append(song)
             if not self.playing:
