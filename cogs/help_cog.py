@@ -1,28 +1,39 @@
 #!/usr/bin/env python3
 
 from discord.ext import commands
-
+from src import settings
+import discord
 
 class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+        _prefix = settings.PREFIX
+        _embed = settings.EMBED_SETTINGS
+
+        _commands = [
+            "p", "s", 
+            "loop", "queue", 
+            "remove", "pause", 
+            "resume", "skipall", 
+            "leave", "delete", "help"
+        ]
+
+        _final_commands = [
+            "**DJ commands**",
+            ",".join([f"`{c}`" for c in _commands]),
+            "\n",
+            f"*Prefix `{_prefix}`*"
+        ]
+
+        _embed['description'] = "\n".join(_final_commands)
+
+        self.embed = discord.Embed.from_dict(_embed)
+        
+
     @commands.command(pass_context=True)
     async def help(self, ctx):
-        message = ("```List of commands:\n"
-                   "\n"
-                   ",p - Play a song via Youtube/Soundcloud link or search by keywords. If a song is already playing, put the new one in queue.\n"
-                   ",s - Skip the current song.\n"
-                   ",loop - Loop the current song.\n"
-                   ",queue - Show the current queue.\n"
-                   ",remove - Remove the specified song from the queue (use order number from ,queue).\n"
-                   ",pause - Pause playback.\n"
-                   ",resume - Resume playback.\n"
-                   ",skipall - Empty queue and skip the current song.\n"
-                   ",leave - Ask the bot to leave the current channel.\n"
-                   ",delete - Delete the specified amount of bot's messages from the channel (default 10).\n"
-                   ",help - List the available commands.```")
-        await ctx.send(message)
+        await ctx.send(embed=self.embed)
 
 
 async def setup(bot):
