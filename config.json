@@ -1,0 +1,64 @@
+{
+    "errors": {
+    },
+
+    "embeds": {
+        "help": {
+            "type" : "rich",
+            "title" : "BluePen",
+            "description"  : "Use o Prefixo ! para chamar os comandos.",
+            "url" : "https://www.google.com",
+            "color" : 3447003,
+            "fields" : [
+                {
+                    "name" : "⏯️ - play",
+                    "value" : "`Toca uma música ou uma playlist do youtube.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "⏸️ - pause",
+                    "value" : "`Pausa a reprodução da música atual.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "▶️ - resume",
+                    "value" : "`Continua a reprodução da música da onde parou.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "❌ - remove",
+                    "value" : "`Remove uma música da playlist dado um índice.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "⏩ - skip",
+                    "value" : "`Pula a música atual.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "⏭️ - skipall",
+                    "value" : "`Pula todas as músicas.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "🔢 - queue",
+                    "value" : "`Lista todas as músicas na fila.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "🔁 - loop",
+                    "value" : "`Habilita loop para a playlist.`",
+                    "inline" : false
+                },
+                {
+                    "name" : "⏏️ - disconnect",
+                    "value" : "`Remove o bot do Canal de voz.`",
+                    "inline" : false
+                }
+            ]
+        },
+        "now_playing" : {
+
+        }
+    }
+}

@@ -35,13 +35,19 @@ class Music(commands.Cog):
             asyncio.create_task(self.load_playlist(ctx, video))
         elif link:
             results = await self.bot.loop.run_in_executor(None, self.get_info, self.YDL_OPTIONS, video)
-            song = {'source': results['url'], 'title': results['title']}
+            song = {
+                'source': results['url'], 
+                'title': results['title']
+            }
             self.queue.append(song)
             await self.send_queue(ctx, [song])
         else:
             source = await self.bot.loop.run_in_executor(None, self.get_info, self.YDL_OPTIONS, f'ytsearch:{video}')
             results = source['entries'][0]
-            song = {'source': results['url'], 'title': results['title']}
+            song = {
+                'source': results['url'], 
+                'title': results['title']
+            }
             self.queue.append(song)
             await self.send_queue(ctx, [song])
 
@@ -112,17 +118,19 @@ class Music(commands.Cog):
             return True
 
     @commands.command(pass_context=True)
-    async def p(self, ctx, *args):
+    async def play(self, ctx, *args):
         query = " ".join(args)
         if await self.user_is_connected(ctx):
             if self.voice_channel is None:
                 self.voice_channel = await ctx.author.voice.channel.connect()
+
             await self.search(query, ctx)
+
             if not self.playing:
                 await self.play_music(ctx)
 
     @commands.command(pass_context=True)
-    async def s(self, ctx):
+    async def skip(self, ctx):
         if await self.user_is_connected(ctx) and self.voice_channel.is_connected() and self.playing:
             await ctx.send("```They see me skippin', they hatin'~```")
             self.loop = False
@@ -151,7 +159,7 @@ class Music(commands.Cog):
             self.voice_channel.stop()
 
     @commands.command(pass_context=True)
-    async def leave(self, ctx):
+    async def disconnect(self, ctx):
         if await self.user_is_connected(ctx) and self.voice_channel.is_connected():
             await ctx.send("```Bye bye!```")
             self.queue = []
@@ -159,10 +167,6 @@ class Music(commands.Cog):
             self.voice_channel.stop()
             await self.voice_channel.disconnect()
             self.voice_channel = None
-
-    @commands.command(pass_context=True)
-    async def delete(self, ctx, amount=10):
-        await self.delete_messages(ctx, int(amount))
 
     @commands.command(pass_context=True)
     async def queue(self, ctx):
@@ -185,6 +189,10 @@ class Music(commands.Cog):
         title = self.current_song['title']
         message = str(f"```Looping:\n{title}```")
         await ctx.send(message)
+
+    # @commands.command(pass_context=True)
+    # async def delete(self, ctx, amount=10):
+    #     await self.delete_messages(ctx, int(amount))
 
 
 async def setup(bot):
