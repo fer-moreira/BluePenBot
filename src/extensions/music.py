@@ -78,7 +78,7 @@ class Music(commands.Cog):
 
             if not self.loop:
                 self.current_song = self.queue[0]
-                await self.send_title(ctx)
+                await self.send_current_song(ctx)
                 self.queue.pop(0)
             
             self.voice_channel.play(
@@ -91,6 +91,7 @@ class Music(commands.Cog):
 
         elif len(self.queue) == 0 or not self.voice_channel.is_playing():
             self.playing = False
+            ctx.send("ACABOU AS MUSICA PORRA")
             
     async def load_playlist(self, ctx, link):
         songs = []
@@ -122,16 +123,13 @@ class Music(commands.Cog):
             if not self.playing:
                 await self.play_music(ctx)
 
-    async def delete_messages(self, ctx, amount):
-        await ctx.channel.purge(limit=amount, check=lambda message: message.author == self.bot.user)
-
-    async def send_title(self, ctx):
-        _settings = self.embeds.get("now_playing", {})
+    async def send_current_song(self, ctx):
         song_info = self.queue[0]
+        _settings = self.embeds.get("now_playing", {})
 
-        _settings["fields"][0]["name"] = song_info['title']
-        _settings["fields"][0]["name"] = song_info['uploader']
-        _settings["thumbnail"]["url"]  = song_info['thumbnail']
+        _settings["fields"][0]["name"]  = song_info['uploader']
+        _settings["fields"][0]["value"] = song_info['title']
+        _settings["thumbnail"]["url"]   = song_info['thumbnail']
 
         message = GenericEmbed().configure(_settings)
 
@@ -140,16 +138,6 @@ class Music(commands.Cog):
     @staticmethod
     def get_info(parameters, link):
         return YoutubeDL(parameters).extract_info(link, download=False)
-
-    @staticmethod
-    async def send_queue(ctx, songs):
-        message = ''
-        for i in songs:
-            title = i['title']
-            message += title + '\n'
-        if message != '':
-            output = str(f"```Queued up:\n{message}```")
-            await ctx.send(output)
 
     @staticmethod
     async def user_is_connected(ctx):
@@ -174,7 +162,6 @@ class Music(commands.Cog):
     @commands.command(pass_context=True)
     async def skip(self, ctx):
         if await self.user_is_connected(ctx) and self.voice_channel.is_connected() and self.playing:
-            # await ctx.send("```They see me skippin', they hatin'~```")
             self.loop = False
             self.voice_channel.stop()
 
@@ -231,10 +218,6 @@ class Music(commands.Cog):
         title = self.current_song['title']
         message = str(f"```Looping:\n{title}```")
         await ctx.send(message)
-
-    # @commands.command(pass_context=True)
-    # async def delete(self, ctx, amount=10):
-    #     await self.delete_messages(ctx, int(amount))
 
 
 async def setup(bot):
