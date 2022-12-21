@@ -1,3 +1,4 @@
+import os
 
 PREFIX = '!'
 
@@ -7,6 +8,8 @@ EMBED_SETTINGS = {
     "color": 0x0062ff,
     "url": "https://twitter.com/nando_ferreira2",
 }
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # self.commands = [
 #     "List of commands:",

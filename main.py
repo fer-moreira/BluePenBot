@@ -6,8 +6,6 @@ import asyncio
 
 from src import settings
 
-with open('token.txt') as t:
-    token = t.read()
 
 async def start_bot():
     bot = commands.Bot(command_prefix=settings.PREFIX, intents=discord.Intents.all(), help_command=None)
@@ -17,4 +15,4 @@ async def start_bot():
 
 if __name__ == '__main__':
     bot = asyncio.run(start_bot())
-    bot.run(f'{token}')
+    bot.run(settings.DISCORD_TOKEN)
