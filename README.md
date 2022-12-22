@@ -1,51 +1,57 @@
-# MuseBot
+# BluePen Bot
 
-## <b>A Discord music bot that can play songs from Youtube and Soundcloud</b>
+## <b>Um bot de música para o discord que aceita Youtube e Soundcloud.</b>
 
-### Available commands:
+### Todos os comandos:
 
+![alt text for screen readers](/_git/_help.png).
+
+<br></br>
+
+## Rodando o Código
+
+1. Clone o repositorio atual (git clone git@github.com:fer-moreira/BluePenBot.git) ou baixe o zip e extraia em qualquer lugar
+2. Abra um terminal na raiz do bot, onde se encontra o main.py
+3. Instale os pacotes do ffmpeg, [Instalar no windows](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/), para instalar no Linux (WSL) use os comandos abaixo
+ 
+```bash
+sudo add-apt-repository ppa:mc3man/trusty-media
+sudo apt-get update
+sudo apt-get dist-upgrade
+sudo apt-get install ffmpeg
 ```
-,p - Play a song via Youtube/Soundcloud link or search by keywords. If a song is already playing, put the new one in queue.
-,s - Skip the current song.
-,loop - Loop the current song.
-,queue - Show the current queue.
-,remove - Remove the specified song from the queue (use order number from ,queue).
-,pause - Pause playback.
-,resume - Resume playback.
-,skipall - Empty queue and skip the current song.
-,leave - Ask the bot to leave the current channel.
-,delete - Delete the specified amount of bot's messages from the channel (default 10).
-,help - List the available commands.
+
+4. Crie uma nova virtualenv com o python, pra isso siga os comandos abaixo
+``` bash
+python -m pip install virtualenv
+python -m virtualenv venv
 ```
 
-### Create bot token:
+5. Ative a Virtualenv 
+```bash
+source venv/bin/activate
+```
 
-1. Create a new application on the [Discord Development Portal](https://discord.com/developers/applications).
+6. Instale os pacotes do python
+```bash
+python -m pip install -r requirements.txt
+```
 
-2. Click on the application you just created, go to "Bot" on the left and click "Add Bot".
+7. Agora você está pronto para configurar o bot para o seu discord, siga os proximos passos 🍷🗿
 
-3. Scroll down and tick "Presence Intent", "Server Members Intent" and "Message Content Intent".
 
-4. Click on "Reset Token", then save the given token somewhere. Never share it with anyone.
+<br></br>
 
-5. Go to "OAuth2" on the left and then "URL Generator". Tick "bot". Then, in the new tab that just opened, give the bot the necessary permissions for your channel (Connect, Speak, Send Messages, Manage Messages). An invite link for the bot should appear below, use it to add the bot to your server.
+## Como configurar para o seu Bot
 
-### Set up bot:
+1. Crie uma aplicação no [Discord Development Portal](https://discord.com/developers/applications), gera um novo token de Bot para essa APP no botão (Reset Token)
+2.  Copie o token e coloque em uma variavel de ambiente chamada ```DISCORD_TOKEN```, no wsl é export DISCORD_TOKEN="token" no Windows pesquise por variavel de ambiente, abre as configurações e adicione lá como DISCORD_TOKEN
+3. Agora está tudo pronto, só rodar o código com:
+```bash
+python main.py
+``` 
+<br></br>
 
-1. Make sure you have Python 3.5 (or above), `pip3` and `ffmpeg` installed on your system. If you don't have them and you're on Windows, you can download Python from [python.org](https://www.python.org/) and you can install `ffmpeg` by following [this tutorial](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). If you're on Linux, use your distro's package manager.
-
-2. Download the files from this repo (either `git clone` through your terminal, or download and extract the zip from Github).
-
-3. From your terminal, `cd` into the folder containing the repo files and run `pip3 install -r requirements.txt` to install the necessary dependencies on your system.
-
-4. Open the `token.txt` file and replace the content with the token that you were given in step 4 of "Create bot token", then save.
-
-5. Run the `main.py` file using Python3.
-
-6. Enjoy!
-
-P.S.: the current prefix for bot commands is `,`. To change it, open `main.py` and edit `command_prefix=','` to something else.
-
-### Implementing new modules into the bot:
-
-The bot modules (officially called "cogs") are stored in the `cogs` folder. If you want to make new ones, add them to that folder and remember to load them from the `main.py` file by adding `await bot.load_extension("cogs.<cog_name>")` in the `start_bot` function.
+# TODO
+- melhorar readme
+- refatorar código do player
