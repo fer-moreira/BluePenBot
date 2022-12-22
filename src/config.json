@@ -16,6 +16,11 @@
                     "inline" : false
                 },
                 {
+                    "name" : "⏯️ - shuffle",
+                    "value" : "`Toca as músicas de forma randomica.`",
+                    "inline" : false
+                },
+                {
                     "name" : "⏸️ - pause",
                     "value" : "`Pausa a reprodução da música atual.`",
                     "inline" : false
@@ -41,7 +46,7 @@
                     "inline" : false
                 },
                 {
-                    "name" : "🔢 - queue",
+                    "name" : "📁 - queue",
                     "value" : "`Lista todas as músicas na fila.`",
                     "inline" : false
                 },
@@ -59,7 +64,7 @@
         },
         "now_playing" : {
             "type" : "rich",
-            "title" : "💿 Tocando agora",
+            "title" : "📀 Tocando agora",
             "fields" : [
                 {
                     "name" : "{author}",
@@ -69,6 +74,23 @@
             "thumbnail" : {
                 "url" : "{thumbnail}"
             }
+        },
+        "queue_template" : {
+            "type" : "rich",
+            "title" : "Playlist",
+            "field_template" : {
+                "name" : "\u200B",
+                "value" : "{0} - {1}",
+                "inline" : false
+            }
+        },
+        "shuffle" : {
+            "type" : "rich",
+            "title" : "🔀 A Playlist foi randomizada."
+        },
+        "looping" : {
+            "type" : "rich",
+            "title" : "🔁 Loop ativado para música atual."
         }
     }
 }

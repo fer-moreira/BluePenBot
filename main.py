@@ -10,8 +10,9 @@ async def start_bot():
         help_command=None
     )
 
-    await bot.load_extension('src.extensions.music')
-    await bot.load_extension('src.extensions.help')
+    for extension in settings.EXTENSIONS:
+        print(f"Loading extension: {extension}")
+        await bot.load_extension(extension)
 
     return bot
 

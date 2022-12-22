@@ -32,9 +32,10 @@ LINK_LIST = [
     'soundcloud.com'
 ]
 
-# EXTENSIONS_PATH = "src.extensions"
-# EXTENSIONS_LIST = [
-#     f"{EXTENSIONS_PATH}.{f}" 
-#     for f in os.listdir("extensions") 
-#     if ".py" in f
-# ]
+EXTENSIONS_PATH = "src.extensions"
+
+EXTENSIONS = [
+    f"{EXTENSIONS_PATH}.{e.replace('.py', '')}"
+    for e in os.listdir('./src/extensions') 
+    if ".py" in e
+]

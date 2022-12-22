@@ -12,7 +12,7 @@ class Help(commands.Cog):
     def main_help(self):
         help_config = self.embeds.get("help", {})
         
-        message = GenericEmbed().configure(help_config)
+        message = GenericEmbed().from_config(help_config)
         return message
 
     @commands.command(pass_context=True)
