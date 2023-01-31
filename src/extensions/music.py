@@ -102,23 +102,27 @@ class Music(commands.Cog):
         )
         playlist_length = source['playlist_count']
         for i in range(playlist_length):
-            source = await self.bot.loop.run_in_executor(
-                None,
-                self.get_info,
-                {
-                    'format': 'bestaudio',
-                    'noplaylist': 'False',
-                    'playliststart': i+1,
-                    'playlistend': i+1
-                }, 
-                link
-            )
-            results = source['entries'][0]
-            song = self.__generate_song(results)
-            self.queue.append(song)
-            songs.append(song)
-            if not self.playing:
-                await self.play_music(ctx)
+            try:
+                source = await self.bot.loop.run_in_executor(
+                    None,
+                    self.get_info,
+                    {
+                        'format': 'bestaudio',
+                        'noplaylist': 'False',
+                        'playliststart': i+1,
+                        'playlistend': i+1
+                    }, 
+                    link
+                )
+                results = source['entries'][0]
+                song = self.__generate_song(results)
+                self.queue.append(song)
+                songs.append(song)
+                if not self.playing:
+                    await self.play_music(ctx)
+            except Exception as r:
+                ctx.send(str(r))
+                continue
 
     async def send_current_song(self, ctx):
         song_info = self.queue[0]
